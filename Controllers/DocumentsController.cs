@@ -70,10 +70,11 @@ namespace Document_Repository.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, string documentName, string documentCode, IFormFile file)
+        public IActionResult Edit(int documentId, string documentName, string documentCode, IFormFile file)
         {
-            var document = Context.Documents.FirstOrDefault(d => d.DocumentId == id);
-            if (document == null) return NotFound();
+            var document = Context.Documents.FirstOrDefault(d => d.DocumentId == documentId);
+            if (document == null)
+                return NotFound();
 
             document.DocumentName = documentName;
             document.DocumentCode = documentCode;
@@ -82,7 +83,7 @@ namespace Document_Repository.Controllers
             {
                 var filePath = Path.Combine("wwwroot/uploads", file.FileName);
 
-                // Save new file
+                // Save the new file
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     file.CopyTo(stream);
@@ -98,21 +99,6 @@ namespace Document_Repository.Controllers
             return RedirectToAction("Create");
         }
 
-        [HttpPost]
-        public IActionResult Delete(int id)
-        {
-            var document = Context.Documents.FirstOrDefault(d => d.DocumentId == id);
-            if (document == null) return NotFound();
-
-            if (System.IO.File.Exists(document.FilePath))
-            {
-                System.IO.File.Delete(document.FilePath);
-            }
-
-            Context.Documents.Remove(document);
-            Context.SaveChanges();
-            return RedirectToAction("Create");
-        }
     }
 }
     
